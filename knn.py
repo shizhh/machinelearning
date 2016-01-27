@@ -1,8 +1,9 @@
-# coding : utf-8
+# coding=utf-8
 from numpy import *
 import operator
 import matplotlib
 import matplotlib.pyplot as plt
+from os import listdir
 
 def createDataSet():
     group = array([[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
@@ -73,6 +74,44 @@ def classifyPerson():
     classifierResult = classify0((inArr-minVals)/ranges, normMat, datingLabels, 5)
     print "You will probably like this person: ",resultList[classifierResult-1]
 
+def img2vector(filename):
+    returnVect = zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j] = int(lineStr[j])
+    return returnVect
+
+def handwritingClassTest():
+    hwLabels = []
+    trainingFileList = listdir('E:/machinelearninginaction/Ch02/trainingDigits')
+    m = len(trainingFileList)
+    trainingMat = zeros((m,1024))
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        # print fileNameStr
+        fileStr = fileNameStr.split('.')[0]
+        # print fileStr
+        classNumStr = int(fileStr.split('_')[0])
+        # print classNumStr
+        hwLabels.append(classNumStr)
+        trainingMat[i,:] = img2vector('E:/machinelearninginaction/Ch02/trainingDigits/%s' % fileNameStr)
+    testFileList = listdir('E:/machinelearninginaction/Ch02/testDigits')
+    errorCount = 0.0
+    mTest = len(testFileList)
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUnderTest = img2vector('E:/machinelearninginaction/Ch02/testDigits/%s' % fileNameStr)
+        classifierResult = classify0(vectorUnderTest,trainingMat,hwLabels,7)
+        # print "the classifier came back with: %d, the real answer is: %d"% (classifierResult,classNumStr)
+        if (classifierResult != classNumStr):
+            errorCount += 1.0
+    print "\nthe total number of errors is: %d" % errorCount
+    print "\nthe total error rate is: %f" % (errorCount/float(mTest))
+
 # group,labels = createDataSet()
 # r = classify0([0,0.6],group,labels,3)
 # print r
@@ -83,5 +122,7 @@ def classifyPerson():
 # ax = fig.add_subplot(111)
 # ax.scatter(datingDataMat[:,1],datingDataMat[:,2],15.0*array(datingLabels),15.0*array(datingLabels))
 # plt.show()
-classifyPerson()
-
+# classifyPerson()
+# testVector = img2vector('E:/machinelearninginaction/Ch02/testDigits/0_13.txt')
+# print testVector
+handwritingClassTest()

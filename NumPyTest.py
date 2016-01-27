@@ -1,7 +1,7 @@
 # coding : utf-8
 
 from numpy import *
-array = random.rand(4,4)
+array = random.rand(4, 4)
 print array
 randMat = mat(array)
 print randMat
